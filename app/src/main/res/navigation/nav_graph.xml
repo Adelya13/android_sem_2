@@ -7,5 +7,14 @@
     <fragment
         android:id="@+id/firstFragment"
         android:name="kpfu.itis.valisheva.android_app.fragments.FirstFragment"
-        android:label="FirstFragment" />
+        android:label="FirstFragment" >
+        <action
+            android:id="@+id/action_firstFragment_to_cityFragment"
+            app:destination="@id/cityFragment"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/cityFragment"
+        android:name="kpfu.itis.valisheva.android_app.fragments.CityFragment"
+        android:label="CityFragment" />
 </navigation>

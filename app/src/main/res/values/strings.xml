@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">android_app</string>
+    <string name="app_name">Weather</string>
+    <string name="search_city">Введите город</string>
+    <string name="search">Поиск</string>
+    <string name="city">Город</string>
+    <string name="humidity">Влажность</string>
+    <string name="navigation">Направление</string>
+    <string name="Temp">Температура</string>
+    <string name="error_message">error message</string>
 </resources>
