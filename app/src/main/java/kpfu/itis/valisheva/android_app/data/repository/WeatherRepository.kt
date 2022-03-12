@@ -2,6 +2,7 @@ package kpfu.itis.valisheva.android_app.data.repository
 
 import kpfu.itis.valisheva.android_app.BuildConfig
 import kpfu.itis.valisheva.android_app.data.api.Api
+import kpfu.itis.valisheva.android_app.data.response.NearWeatherResponse
 import kpfu.itis.valisheva.android_app.data.response.WeatherResponse
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -9,7 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-private const val BASE_URL = "http://api.openweathermap.org/data/2.5/"
+private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
 private const val API_KEY = "56fc6c6cb76c0864b4cd055080568268"
 private const val QUERY_API_KEY = "appid"
 
@@ -55,5 +56,8 @@ class WeatherRepository{
 
     suspend fun getWeather(city: String): WeatherResponse {
         return api.getWeather(city)
+    }
+    suspend fun getNearCitiesWeather(lat:Double,lon:Double): NearWeatherResponse {
+        return api.getWeatherInNearCities(lat,lon,10)
     }
 }

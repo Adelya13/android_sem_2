@@ -11,18 +11,19 @@ private const val DEFAULT_LONGITUDE = 54.9044
 class LocationService(context: Context){
 
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-    private var coordinates : Pair<Double,Double> = Pair(DEFAULT_LONGITUDE, DEFAULT_LATITUDE)
+    private var coordinates : Pair<Double,Double> = Pair(DEFAULT_LATITUDE,DEFAULT_LONGITUDE)
 
     @SuppressLint("MissingPermission")
     fun getLocation(): Pair<Double,Double> {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location ->
                 if (location != null) {
-                    coordinates = Pair(location.longitude, location.latitude)
-                } else {
-                    throw NotFoundLocationException("Location not found", Throwable())
+                    coordinates = Pair(location.latitude,location.longitude)
                 }
             }
+        return coordinates
+    }
+    fun getDefaultLocation(): Pair<Double, Double> {
         return coordinates
     }
 }
