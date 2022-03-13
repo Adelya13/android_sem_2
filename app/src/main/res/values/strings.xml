@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">android_app</string>
+    <string name="app_name">Weather</string>
+    <string name="search_city">Enter city</string>
+    <string name="search">Поиск</string>
+    <string name="city">Kazan</string>
+    <string name="humidity">Humidity:</string>
+    <string name="navigation">Wind navigation:</string>
+    <string name="Temp">-11</string>
+    <string name="error_message">error message</string>
+    <string name="weather_desc">Mostly Sunny</string>
+    <string name="max_temp">-7</string>
+    <string name="min_temp">-21</string>
+    <string name="min">min:</string>
+    <string name="max">max:</string>
+    <string name="humidity_value">93%</string>
+    <string name="feel_like">Feel like</string>
+    <string name="navigation_value">NNW</string>
+    <string name="wind_speed">Wind speed:</string>
+    <string name="wind_speed_val">2m/s</string>
 </resources>
