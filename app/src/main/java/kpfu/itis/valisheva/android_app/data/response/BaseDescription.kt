@@ -13,4 +13,6 @@ data class BaseDescription(
     val maxTemperature: Double,
     @SerializedName("pressure")
     val pressure: Int,
+    @SerializedName("humidity")
+    val humidity: Int,
 )

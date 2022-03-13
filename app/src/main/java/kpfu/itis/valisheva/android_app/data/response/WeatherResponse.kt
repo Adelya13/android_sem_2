@@ -21,6 +21,7 @@ data class WeatherResponse(
     val name: String,
     @SerializedName("cod")
     val statusCod: Int,
+
 )
 
 

@@ -60,4 +60,7 @@ class WeatherRepository{
     suspend fun getNearCitiesWeather(lat:Double,lon:Double): NearWeatherResponse {
         return api.getWeatherInNearCities(lat,lon,10)
     }
+    suspend fun getCityWeatherById(id: Int) : WeatherResponse {
+        return  api.getWeatherById(id)
+    }
 }

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kpfu.itis.valisheva.android_app.R
 import kpfu.itis.valisheva.android_app.databinding.ItemCityBinding
+import kpfu.itis.valisheva.android_app.helpers.UnitHelper
 import kpfu.itis.valisheva.android_app.models.City
 import kpfu.itis.valisheva.android_app.services.TemperatureService
 
@@ -15,15 +16,24 @@ class CityHolder(
 ): RecyclerView.ViewHolder(binding.root){
 
     private lateinit var temperatureService: TemperatureService
+    private lateinit var unitHelper: UnitHelper
 
     fun bind(item: City) {
         with(binding) {
-
-            temperatureService = TemperatureService(item.temp-273)
-
+            unitHelper = UnitHelper()
+            temperatureService = TemperatureService()
             tvName.text = item.name
-            tvTemp.text = (item.temp-273).toString()
-            tvTemp.setTextColor(temperatureService.changeTempColour())
+
+            tvTemp.text = unitHelper.addTempUnit(
+                temperatureService.convertToDegrees(
+                    item.temp
+                )
+            )
+            tvTemp.setTextColor(
+                temperatureService.changeTempColour(
+                    item.temp
+                )
+            )
         }
         itemView.setOnClickListener {
             action(item.id)

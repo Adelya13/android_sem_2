@@ -2,11 +2,13 @@ package kpfu.itis.valisheva.android_app.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
@@ -35,7 +37,6 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
     private lateinit var locationService: LocationService
     private lateinit var binding: FragmentFirstBinding
     private lateinit var cityAdapter: CityAdapter
-    private val cities = ArrayList<City>()
 
     private val repository by lazy {
         WeatherRepository()
@@ -52,20 +53,28 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
             }else{
                 locationService.getDefaultLocation()
             }
-            println(coordinates.toString())
             updateCities()
         }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentFirstBinding.bind(view)
         locationService = LocationService(requireContext())
-        cityAdapter = CityAdapter(cities) {
-            openCityWeather(it)
-        }
+        initRV()
+        initSV()
+        getLocation()
+    }
+
+    private fun initRV(){
         val decorator = DividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
         val spacing = SpaceItemDecorator(requireContext())
-        getLocation()
+        binding.rvCities.run{
+            addItemDecoration(decorator)
+            addItemDecoration(spacing)
+        }
+    }
+    private fun initSV(){
         with(binding){
             svSearchCity.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -77,16 +86,9 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
                     return false
                 }
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    return true
+                    return false
                 }
             })
-//            updateCities()
-            rvCities.run{
-                adapter=cityAdapter
-                addItemDecoration(decorator)
-                addItemDecoration(spacing)
-            }
-
         }
     }
 
@@ -95,29 +97,37 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
         getLocation()
     }
 
-    private fun updateCities(){
-        findNearCities()
-    }
-
-
-    private fun findNearCities(){
+    private fun updateCities() : ArrayList<City>{
+        val citiesList: ArrayList<City> = ArrayList()
         lifecycleScope.launch {
             try {
+
                 val response: NearWeatherResponse = repository.getNearCitiesWeather(
                     coordinates.first,
                     coordinates.second
                 )
                 response.cities.forEach {
                     val city = City(it.id, it.name, it.baseDescription.temperature)
-                    cities.add(city)
+                    citiesList.add(city)
                 }
+                initAdapter(citiesList)
+
             } catch (ex: Exception) {
-                showMessage("Such city not found")
+                showMessage("Search near cities")
                 Log.e("SEARCH_EXCEPTION", ex.message.toString())
             }
         }
+        return citiesList
     }
 
+    private fun initAdapter(citiesList: ArrayList<City>){
+        cityAdapter = CityAdapter(citiesList) {
+            openCityWeather(it)
+        }
+        binding.rvCities.apply{
+            adapter = cityAdapter
+        }
+    }
 
     private fun getLocation() {
         permissionLauncher.launch(
@@ -127,6 +137,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
             )
         )
     }
+
     private fun getWeather(city: String) {
         lifecycleScope.launch {
             try {
@@ -158,8 +169,6 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
 
     }
 
-
-
     private fun showMessage(message: String) {
         Snackbar.make(
             requireActivity().findViewById(R.id.container),
@@ -167,8 +176,10 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
             Snackbar.LENGTH_LONG
         ).show()
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
+
     }
 
 }

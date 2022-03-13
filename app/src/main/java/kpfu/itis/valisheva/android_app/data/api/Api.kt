@@ -13,10 +13,17 @@ interface Api{
         @Query("q") city: String
     ): WeatherResponse
 
+    @GET("weather")
+    suspend fun getWeatherById(
+        @Query("id") id : Int
+    ): WeatherResponse
+
     @GET("find")
     suspend fun getWeatherInNearCities(
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
         @Query("cnt") count: Int
     ): NearWeatherResponse
+
+
 }
