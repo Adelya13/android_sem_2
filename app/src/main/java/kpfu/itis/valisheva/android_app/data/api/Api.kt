@@ -1,8 +1,9 @@
 package kpfu.itis.valisheva.android_app.data.api
 
 
-import kpfu.itis.valisheva.android_app.data.response.NearWeatherResponse
-import kpfu.itis.valisheva.android_app.data.response.WeatherResponse
+import kpfu.itis.valisheva.android_app.data.response.main.NearWeatherResponse
+import kpfu.itis.valisheva.android_app.data.response.main.WeatherResponse
+import kpfu.itis.valisheva.android_app.data.response.main.WeatherShortResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -11,7 +12,7 @@ interface Api{
     @GET("weather")
     suspend fun getWeather(
         @Query("q") city: String
-    ): WeatherResponse
+    ): WeatherShortResponse
 
     @GET("weather")
     suspend fun getWeatherById(

@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/firstFragment"
-        android:name="kpfu.itis.valisheva.android_app.fragments.FirstFragment"
+        android:name="kpfu.itis.valisheva.android_app.presentation.fragments.FirstFragment"
         android:label="FirstFragment" >
         <action
             android:id="@+id/action_firstFragment_to_cityFragment"
@@ -15,6 +15,6 @@
     </fragment>
     <fragment
         android:id="@+id/cityFragment"
-        android:name="kpfu.itis.valisheva.android_app.fragments.CityFragment"
+        android:name="kpfu.itis.valisheva.android_app.presentation.fragments.CityFragment"
         android:label="CityFragment" />
 </navigation>
