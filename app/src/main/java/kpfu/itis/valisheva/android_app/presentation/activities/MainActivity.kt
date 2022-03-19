@@ -1,11 +1,11 @@
-package kpfu.itis.valisheva.android_app.activities
+package kpfu.itis.valisheva.android_app.presentation.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import kpfu.itis.valisheva.android_app.R
 import kpfu.itis.valisheva.android_app.databinding.ActivityMainBinding
-import kpfu.itis.valisheva.android_app.extentions.findController
+import kpfu.itis.valisheva.android_app.presentation.extentions.findController
 
 class MainActivity : AppCompatActivity() {
 
