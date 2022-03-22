@@ -8,13 +8,12 @@ import android.view.View
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 import kpfu.itis.valisheva.android_app.R
 import kpfu.itis.valisheva.android_app.data.api.mappers.WeatherMapper
 import kpfu.itis.valisheva.android_app.data.repository.LocationRepositoryImpl
@@ -27,35 +26,36 @@ import kpfu.itis.valisheva.android_app.domain.usecases.location.GetDefaultLocati
 import kpfu.itis.valisheva.android_app.domain.usecases.location.GetLocationUseCase
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetNearCitiesWeatherUseCase
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
+import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
 import kpfu.itis.valisheva.android_app.presentation.rv.CityAdapter
+import kpfu.itis.valisheva.android_app.utils.FirstFragmentViewModelFactory
 import kotlin.collections.ArrayList
 
 private const val KEY_CITY_ID = "CITY ID"
 
 class FirstFragment : Fragment(R.layout.fragment_first) {
 
-    private lateinit var getLocationUseCase: GetLocationUseCase
-    private lateinit var getDefaultLocationUseCase: GetDefaultLocationUseCase
-    private lateinit var getWeatherUseCase: GetWeatherUseCase
-    private lateinit var getNearCitiesWeatherUseCase: GetNearCitiesWeatherUseCase
     private lateinit var coordinates: Coordinates
     private lateinit var binding: FragmentFirstBinding
     private lateinit var cityAdapter: CityAdapter
+
+    private lateinit var viewModel: FirstModelView
 
 
 
     @SuppressLint("MissingPermission")
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-            coordinates = if (
+            if (
                 it[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                 it[Manifest.permission.ACCESS_COARSE_LOCATION] == true
             ) {
-                getLocationUseCase.invoke()
+                 viewModel.getLocation()
             }else{
-                getDefaultLocationUseCase.invoke()
+                showMessage("Location dont find, generate defaultLocation")
+                viewModel.getDefaultLocation()
             }
-            updateCities()
+
         }
 
 
@@ -68,33 +68,72 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
 
 
     private fun initAll(){
-        initUseCases()
+        initFactory()
+        initObservers()
         initRV()
         initSV()
     }
 
-    private fun initUseCases(){
-        getLocationUseCase = GetLocationUseCase(
-            locationRepository = LocationRepositoryImpl(
-                context = requireContext()
-            )
-        )
-        getDefaultLocationUseCase = GetDefaultLocationUseCase(
-            locationRepository = LocationRepositoryImpl(
-                context = requireContext()
-            )
-        )
-        getWeatherUseCase = GetWeatherUseCase(
-            weatherRepository = WeatherRepositoryImpl(
-                weatherMapper = WeatherMapper()
-            )
-        )
-        getNearCitiesWeatherUseCase = GetNearCitiesWeatherUseCase(
-            weatherRepository = WeatherRepositoryImpl(
-                weatherMapper = WeatherMapper()
-            )
-        )
 
+    private fun initFactory(){
+        val getLocationUseCase = GetLocationUseCase(
+            locationRepository = LocationRepositoryImpl(
+                context = requireContext()
+            )
+        )
+        val getDefaultLocationUseCase = GetDefaultLocationUseCase(
+            locationRepository = LocationRepositoryImpl(
+                context = requireContext()
+            )
+        )
+        val getWeatherUseCase = GetWeatherUseCase(
+            weatherRepository = WeatherRepositoryImpl(
+                weatherMapper = WeatherMapper()
+            )
+        )
+        val getNearCitiesWeatherUseCase = GetNearCitiesWeatherUseCase(
+            weatherRepository = WeatherRepositoryImpl(
+                weatherMapper = WeatherMapper()
+            )
+        )
+        val factory = FirstFragmentViewModelFactory(
+            getLocationUseCase,
+            getDefaultLocationUseCase,
+            getWeatherUseCase,
+            getNearCitiesWeatherUseCase
+        )
+        viewModel = ViewModelProvider(
+            viewModelStore,
+            factory
+        )[FirstModelView::class.java]
+    }
+
+    private fun initObservers(){
+        viewModel.city.observe(viewLifecycleOwner){
+            it.fold(onSuccess = { it ->
+                openCityWeather(it.id)
+            },onFailure = {
+                showMessage("Such city not found")
+                Log.e("CITY_FIND_EXCEPTION", it.message.toString())
+            })
+        }
+        viewModel.coordinates.observe(viewLifecycleOwner){
+            it.fold(onSuccess = {
+                coordinates = it
+                viewModel.getNearCitiesWeather(it)
+            },onFailure = {
+                showMessage("Location not found")
+                Log.e("LOCATION_EXCEPTION", it.message.toString())
+            })
+        }
+        viewModel.nearCities.observe(viewLifecycleOwner){
+            it.fold(onSuccess = {
+                initAdapter(it)
+            }, onFailure = {
+                showMessage("Search near cities")
+                Log.e("SEARCH_EXCEPTION", it.message.toString())
+            })
+        }
     }
 
     private fun initRV(){
@@ -110,7 +149,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
             svSearchCity.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (query != null) {
-                        getWeather(query)
+                        viewModel.onGetWeatherClick(query)
                     }else{
                         showMessage("Please enter city")
                     }
@@ -128,22 +167,6 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
         getLocation()
     }
 
-    private fun updateCities() : ArrayList<ShortCityWeather>{
-        var citiesList: ArrayList<ShortCityWeather> = arrayListOf()
-        lifecycleScope.launch {
-            try {
-                citiesList = getNearCitiesWeatherUseCase(
-                    coordinates.latitude,
-                    coordinates.longitude
-                )
-                initAdapter(citiesList)
-            } catch (ex: Exception) {
-                showMessage("Search near cities")
-                Log.e("SEARCH_EXCEPTION", ex.message.toString())
-            }
-        }
-        return citiesList
-    }
 
     private fun initAdapter(citiesList: ArrayList<ShortCityWeather>){
         cityAdapter = CityAdapter(citiesList) {
@@ -163,17 +186,6 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
         )
     }
 
-    private fun getWeather(city: String) {
-        lifecycleScope.launch {
-            try {
-                val city = getWeatherUseCase(city)
-                openCityWeather(city.id)
-            } catch (ex: Exception) {
-                showMessage("Such city not found")
-                Log.e("SEARCH_EXCEPTION", ex.message.toString())
-            }
-        }
-    }
 
     private fun openCityWeather(cityId: Int?){
         var bundle: Bundle? = null
