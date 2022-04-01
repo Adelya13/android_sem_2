@@ -25,10 +25,11 @@ import kpfu.itis.valisheva.android_app.domain.entities.ShortCityWeather
 import kpfu.itis.valisheva.android_app.domain.usecases.location.GetDefaultLocationUseCase
 import kpfu.itis.valisheva.android_app.domain.usecases.location.GetLocationUseCase
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetNearCitiesWeatherUseCase
+import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherByIdUseCase
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
 import kpfu.itis.valisheva.android_app.presentation.rv.CityAdapter
-import kpfu.itis.valisheva.android_app.utils.FirstFragmentViewModelFactory
+import kpfu.itis.valisheva.android_app.utils.WeatherViewModelFactory
 import kotlin.collections.ArrayList
 
 private const val KEY_CITY_ID = "CITY ID"
@@ -96,11 +97,12 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
                 weatherMapper = WeatherMapper()
             )
         )
-        val factory = FirstFragmentViewModelFactory(
+        val factory = WeatherViewModelFactory(
             getLocationUseCase,
             getDefaultLocationUseCase,
             getWeatherUseCase,
-            getNearCitiesWeatherUseCase
+            getNearCitiesWeatherUseCase,
+            GetWeatherByIdUseCase(WeatherRepositoryImpl(WeatherMapper()))
         )
         viewModel = ViewModelProvider(
             viewModelStore,

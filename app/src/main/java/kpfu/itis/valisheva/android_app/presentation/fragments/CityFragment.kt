@@ -1,18 +1,13 @@
 package kpfu.itis.valisheva.android_app.presentation.fragments
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
-import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.FutureTarget
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import kpfu.itis.valisheva.android_app.R
@@ -30,9 +25,7 @@ import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherByIdUse
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
 import kpfu.itis.valisheva.android_app.presentation.services.TemperatureService
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.CityModelView
-import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
-import kpfu.itis.valisheva.android_app.utils.CityFragmentViewModelsFactory
-import kpfu.itis.valisheva.android_app.utils.FirstFragmentViewModelFactory
+import kpfu.itis.valisheva.android_app.utils.WeatherViewModelFactory
 
 
 private const val KEY_CITY_ID = "CITY ID"
@@ -80,8 +73,12 @@ class CityFragment : Fragment(R.layout.fragment_city){
                 weatherMapper = WeatherMapper()
             )
         )
-        val factory = CityFragmentViewModelsFactory(
-           getWeatherByIdUseCase
+        val factory = WeatherViewModelFactory(
+            GetLocationUseCase(LocationRepositoryImpl(requireContext())),
+            GetDefaultLocationUseCase(LocationRepositoryImpl(requireContext())),
+            GetWeatherUseCase(WeatherRepositoryImpl(WeatherMapper())),
+            GetNearCitiesWeatherUseCase(WeatherRepositoryImpl(WeatherMapper())),
+            getWeatherByIdUseCase
         )
         viewModel = ViewModelProvider(
             viewModelStore,
