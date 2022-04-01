@@ -13,8 +13,9 @@ import kpfu.itis.valisheva.android_app.domain.usecases.location.GetDefaultLocati
 import kpfu.itis.valisheva.android_app.domain.usecases.location.GetLocationUseCase
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetNearCitiesWeatherUseCase
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
+import javax.inject.Inject
 
-class FirstModelView(
+class FirstModelView @Inject constructor(
     private val getLocationUseCase: GetLocationUseCase,
     private val getDefaultLocationUseCase: GetDefaultLocationUseCase,
     private val getWeatherUseCase: GetWeatherUseCase,

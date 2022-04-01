@@ -5,11 +5,13 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
+import kpfu.itis.valisheva.android_app.App
 import kpfu.itis.valisheva.android_app.R
 import kpfu.itis.valisheva.android_app.data.api.mappers.WeatherMapper
 import kpfu.itis.valisheva.android_app.data.repository.LocationRepositoryImpl
@@ -25,7 +27,9 @@ import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherByIdUse
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
 import kpfu.itis.valisheva.android_app.presentation.services.TemperatureService
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.CityModelView
+import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
 import kpfu.itis.valisheva.android_app.utils.WeatherViewModelFactory
+import javax.inject.Inject
 
 
 private const val KEY_CITY_ID = "CITY ID"
@@ -34,13 +38,23 @@ private const val IMG_END_URL = "@2x.png"
 
 class CityFragment : Fragment(R.layout.fragment_city){
 
-    private lateinit var viewModel: CityModelView
+
     private lateinit var binding: FragmentCityBinding
     private lateinit var temperatureService: TemperatureService
     private lateinit var navigationConverter: NavigationConverter
     private lateinit var unitHelper: UnitHelper
 
+    @Inject
+    lateinit var factory: WeatherViewModelFactory
 
+    private val viewModel: CityModelView by viewModels {
+        factory
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        (activity?.application as? App)?.appComponent?.inject(this)
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,7 +64,6 @@ class CityFragment : Fragment(R.layout.fragment_city){
     }
 
     private fun init(){
-        initFactory()
         initObservers()
         temperatureService = TemperatureService()
         unitHelper = UnitHelper()
@@ -67,24 +80,7 @@ class CityFragment : Fragment(R.layout.fragment_city){
         }
     }
 
-    private fun initFactory(){
-        val getWeatherByIdUseCase = GetWeatherByIdUseCase(
-            weatherRepository = WeatherRepositoryImpl(
-                weatherMapper = WeatherMapper()
-            )
-        )
-        val factory = WeatherViewModelFactory(
-            GetLocationUseCase(LocationRepositoryImpl(requireContext())),
-            GetDefaultLocationUseCase(LocationRepositoryImpl(requireContext())),
-            GetWeatherUseCase(WeatherRepositoryImpl(WeatherMapper())),
-            GetNearCitiesWeatherUseCase(WeatherRepositoryImpl(WeatherMapper())),
-            getWeatherByIdUseCase
-        )
-        viewModel = ViewModelProvider(
-            viewModelStore,
-            factory
-        )[CityModelView::class.java]
-    }
+
 
     private fun getCityWeatherArgumentsById(){
         viewModel.searchCityWeatherById(

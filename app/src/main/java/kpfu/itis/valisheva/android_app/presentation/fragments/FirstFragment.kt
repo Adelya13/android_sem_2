@@ -8,12 +8,14 @@ import android.view.View
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import kpfu.itis.valisheva.android_app.App
 import kpfu.itis.valisheva.android_app.R
 import kpfu.itis.valisheva.android_app.data.api.mappers.WeatherMapper
 import kpfu.itis.valisheva.android_app.data.repository.LocationRepositoryImpl
@@ -30,6 +32,7 @@ import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
 import kpfu.itis.valisheva.android_app.presentation.rv.CityAdapter
 import kpfu.itis.valisheva.android_app.utils.WeatherViewModelFactory
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 private const val KEY_CITY_ID = "CITY ID"
@@ -40,9 +43,18 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
     private lateinit var binding: FragmentFirstBinding
     private lateinit var cityAdapter: CityAdapter
 
-    private lateinit var viewModel: FirstModelView
+    @Inject
+    lateinit var factory: WeatherViewModelFactory
 
+    private val viewModel: FirstModelView by viewModels {
+        factory
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        (activity?.application as? App)?.appComponent?.inject(this)
+        //(application as App).appComponent.inject(this)
+        super.onCreate(savedInstanceState)
+    }
 
     @SuppressLint("MissingPermission")
     private val permissionLauncher =
@@ -69,45 +81,9 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
 
 
     private fun initAll(){
-        initFactory()
         initObservers()
         initRV()
         initSV()
-    }
-
-
-    private fun initFactory(){
-        val getLocationUseCase = GetLocationUseCase(
-            locationRepository = LocationRepositoryImpl(
-                context = requireContext()
-            )
-        )
-        val getDefaultLocationUseCase = GetDefaultLocationUseCase(
-            locationRepository = LocationRepositoryImpl(
-                context = requireContext()
-            )
-        )
-        val getWeatherUseCase = GetWeatherUseCase(
-            weatherRepository = WeatherRepositoryImpl(
-                weatherMapper = WeatherMapper()
-            )
-        )
-        val getNearCitiesWeatherUseCase = GetNearCitiesWeatherUseCase(
-            weatherRepository = WeatherRepositoryImpl(
-                weatherMapper = WeatherMapper()
-            )
-        )
-        val factory = WeatherViewModelFactory(
-            getLocationUseCase,
-            getDefaultLocationUseCase,
-            getWeatherUseCase,
-            getNearCitiesWeatherUseCase,
-            GetWeatherByIdUseCase(WeatherRepositoryImpl(WeatherMapper()))
-        )
-        viewModel = ViewModelProvider(
-            viewModelStore,
-            factory
-        )[FirstModelView::class.java]
     }
 
     private fun initObservers(){

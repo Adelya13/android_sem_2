@@ -9,30 +9,17 @@ import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherByIdUse
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.CityModelView
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
+import javax.inject.Inject
+import javax.inject.Provider
 
-class WeatherViewModelFactory(
-    private val getLocationUseCase: GetLocationUseCase,
-    private val getDefaultLocationUseCase: GetDefaultLocationUseCase,
-    private val getWeatherUseCase: GetWeatherUseCase,
-    private val getNearCitiesWeatherUseCase: GetNearCitiesWeatherUseCase,
-    private val getWeatherByIdUseCase: GetWeatherByIdUseCase,
+class WeatherViewModelFactory @Inject constructor(
+    private val viewModelMap: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        when {
-            modelClass.isAssignableFrom(FirstModelView::class.java) ->
-                FirstModelView(
-                    getLocationUseCase,
-                    getDefaultLocationUseCase,
-                    getWeatherUseCase,
-                    getNearCitiesWeatherUseCase
-                ) as? T ?: throw IllegalArgumentException("Unknown ViewModel class")
-
-            modelClass.isAssignableFrom(CityModelView::class.java) ->
-                CityModelView(
-                    getWeatherByIdUseCase
-                ) as? T ?: throw IllegalArgumentException("Unknown ViewModel class")
-            else ->
-                throw IllegalArgumentException("Unknown ViewModel class")
-        }
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        val result = viewModelMap[modelClass] ?: viewModelMap.entries.firstOrNull {
+            modelClass.isAssignableFrom(it.key)
+        }?.value ?: throw IllegalArgumentException("Unknown model class $modelClass")
+        @Suppress("UNCHECKED_CAST")
+        return result.get() as T
+    }
 }

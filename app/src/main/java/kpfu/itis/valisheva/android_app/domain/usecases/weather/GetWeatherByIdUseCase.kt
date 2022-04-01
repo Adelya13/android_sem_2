@@ -6,8 +6,9 @@ import kotlinx.coroutines.withContext
 import kpfu.itis.valisheva.android_app.domain.entities.City
 import kpfu.itis.valisheva.android_app.domain.entities.FullCityWeather
 import kpfu.itis.valisheva.android_app.domain.repositories.WeatherRepository
+import javax.inject.Inject
 
-class GetWeatherByIdUseCase (
+class GetWeatherByIdUseCase @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ){
