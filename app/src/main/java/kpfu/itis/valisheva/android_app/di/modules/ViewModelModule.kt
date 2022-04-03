@@ -8,14 +8,14 @@ import dagger.multibindings.IntoMap
 import kpfu.itis.valisheva.android_app.di.ViewModelKey
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.CityModelView
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
-import kpfu.itis.valisheva.android_app.utils.WeatherViewModelFactory
+import kpfu.itis.valisheva.android_app.utils.AppViewModelFactory
 
 @Module
 interface ViewModelModule {
 
     @Binds
     fun bindViewModelFactory(
-        factory: WeatherViewModelFactory
+        factory: AppViewModelFactory
     ): ViewModelProvider.Factory
 
     @Binds

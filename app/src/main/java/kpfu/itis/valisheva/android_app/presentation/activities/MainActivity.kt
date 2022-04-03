@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var controller: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //(this.application as App).appComponent.inject(this)
+//        (this.application as App).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater).also{
             setContentView(it.root)

@@ -6,29 +6,19 @@ import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import kpfu.itis.valisheva.android_app.App
 import kpfu.itis.valisheva.android_app.R
-import kpfu.itis.valisheva.android_app.data.api.mappers.WeatherMapper
-import kpfu.itis.valisheva.android_app.data.repository.LocationRepositoryImpl
-import kpfu.itis.valisheva.android_app.data.repository.WeatherRepositoryImpl
 import kpfu.itis.valisheva.android_app.databinding.FragmentCityBinding
 import kpfu.itis.valisheva.android_app.domain.coverters.NavigationConverter
 import kpfu.itis.valisheva.android_app.domain.entities.FullCityWeather
 import kpfu.itis.valisheva.android_app.domain.helpers.UnitHelper
-import kpfu.itis.valisheva.android_app.domain.usecases.location.GetDefaultLocationUseCase
-import kpfu.itis.valisheva.android_app.domain.usecases.location.GetLocationUseCase
-import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetNearCitiesWeatherUseCase
-import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherByIdUseCase
-import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
 import kpfu.itis.valisheva.android_app.presentation.services.TemperatureService
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.CityModelView
-import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
-import kpfu.itis.valisheva.android_app.utils.WeatherViewModelFactory
+import kpfu.itis.valisheva.android_app.utils.AppViewModelFactory
 import javax.inject.Inject
 
 
@@ -45,14 +35,14 @@ class CityFragment : Fragment(R.layout.fragment_city){
     private lateinit var unitHelper: UnitHelper
 
     @Inject
-    lateinit var factory: WeatherViewModelFactory
+    lateinit var factory: AppViewModelFactory
 
     private val viewModel: CityModelView by viewModels {
         factory
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (activity?.application as? App)?.appComponent?.inject(this)
+        (activity?.application as App).appComponent.inject(this)
         super.onCreate(savedInstanceState)
     }
 

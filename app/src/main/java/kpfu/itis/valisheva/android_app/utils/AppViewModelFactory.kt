@@ -12,7 +12,7 @@ import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
 import javax.inject.Inject
 import javax.inject.Provider
 
-class WeatherViewModelFactory @Inject constructor(
+class AppViewModelFactory @Inject constructor(
     private val viewModelMap: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

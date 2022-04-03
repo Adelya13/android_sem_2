@@ -22,8 +22,8 @@ class FirstModelView @Inject constructor(
     private val getNearCitiesWeatherUseCase: GetNearCitiesWeatherUseCase
 ): ViewModel() {
 
-    private var _city: MutableLiveData<Result<City>> = MutableLiveData()
-    val city: LiveData<Result<City>> = _city
+    private var _city: SingleLiveEvent<Result<City>> = SingleLiveEvent<Result<City>>()
+    val city: SingleLiveEvent<Result<City>> = _city
 
     private var _coordinates: MutableLiveData<Result<Coordinates>> = MutableLiveData()
     val coordinates: LiveData<Result<Coordinates>> = _coordinates

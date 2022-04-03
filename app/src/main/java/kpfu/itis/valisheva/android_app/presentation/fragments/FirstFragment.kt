@@ -2,6 +2,7 @@ package kpfu.itis.valisheva.android_app.presentation.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,7 +10,6 @@ import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -17,21 +17,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import kpfu.itis.valisheva.android_app.App
 import kpfu.itis.valisheva.android_app.R
-import kpfu.itis.valisheva.android_app.data.api.mappers.WeatherMapper
 import kpfu.itis.valisheva.android_app.data.repository.LocationRepositoryImpl
-import kpfu.itis.valisheva.android_app.data.repository.WeatherRepositoryImpl
 import kpfu.itis.valisheva.android_app.databinding.FragmentFirstBinding
 import kpfu.itis.valisheva.android_app.domain.entities.Coordinates
 import kpfu.itis.valisheva.android_app.presentation.decorators.SpaceItemDecorator
 import kpfu.itis.valisheva.android_app.domain.entities.ShortCityWeather
-import kpfu.itis.valisheva.android_app.domain.usecases.location.GetDefaultLocationUseCase
-import kpfu.itis.valisheva.android_app.domain.usecases.location.GetLocationUseCase
-import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetNearCitiesWeatherUseCase
-import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherByIdUseCase
-import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
 import kpfu.itis.valisheva.android_app.presentation.rv.CityAdapter
-import kpfu.itis.valisheva.android_app.utils.WeatherViewModelFactory
+import kpfu.itis.valisheva.android_app.utils.AppViewModelFactory
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -43,16 +36,17 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
     private lateinit var binding: FragmentFirstBinding
     private lateinit var cityAdapter: CityAdapter
 
+
     @Inject
-    lateinit var factory: WeatherViewModelFactory
+    lateinit var factory: AppViewModelFactory
 
     private val viewModel: FirstModelView by viewModels {
         factory
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (activity?.application as? App)?.appComponent?.inject(this)
-        //(application as App).appComponent.inject(this)
+        (activity?.application as App).appComponent.inject(this)
+        getLocation()
         super.onCreate(savedInstanceState)
     }
 
@@ -64,19 +58,21 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
                 it[Manifest.permission.ACCESS_COARSE_LOCATION] == true
             ) {
                  viewModel.getLocation()
+                 showMessage("Location is found")
             }else{
-                showMessage("Location dont find, generate defaultLocation")
+                showMessage("Location don't find, generate defaultLocation")
                 viewModel.getDefaultLocation()
             }
-
+            viewModel.getNearCitiesWeather(coordinates)
         }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentFirstBinding.bind(view)
-        initAll()
         getLocation()
+        initAll()
+
     }
 
 
@@ -88,7 +84,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
 
     private fun initObservers(){
         viewModel.city.observe(viewLifecycleOwner){
-            it.fold(onSuccess = { it ->
+            it?.fold(onSuccess = { it ->
                 openCityWeather(it.id)
             },onFailure = {
                 showMessage("Such city not found")
@@ -99,6 +95,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
             it.fold(onSuccess = {
                 coordinates = it
                 viewModel.getNearCitiesWeather(it)
+
             },onFailure = {
                 showMessage("Location not found")
                 Log.e("LOCATION_EXCEPTION", it.message.toString())
