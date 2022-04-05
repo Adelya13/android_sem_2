@@ -1,11 +1,12 @@
-package kpfu.itis.valisheva.android_app.activities
+package kpfu.itis.valisheva.android_app.presentation.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import kpfu.itis.valisheva.android_app.App
 import kpfu.itis.valisheva.android_app.R
 import kpfu.itis.valisheva.android_app.databinding.ActivityMainBinding
-import kpfu.itis.valisheva.android_app.extentions.findController
+import kpfu.itis.valisheva.android_app.presentation.extentions.findController
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,6 +14,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var controller: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
+//        (this.application as App).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater).also{
             setContentView(it.root)
