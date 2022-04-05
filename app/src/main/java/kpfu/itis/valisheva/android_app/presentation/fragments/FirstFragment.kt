@@ -58,9 +58,7 @@ class FirstFragment : Fragment(R.layout.fragment_first) {
                 it[Manifest.permission.ACCESS_COARSE_LOCATION] == true
             ) {
                  viewModel.getLocation()
-                 showMessage("Location is found")
             }else{
-                showMessage("Location don't find, generate defaultLocation")
                 viewModel.getDefaultLocation()
             }
             viewModel.getNearCitiesWeather(coordinates)
