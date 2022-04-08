@@ -9,8 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kpfu.itis.valisheva.android_app.App
 import kpfu.itis.valisheva.android_app.R
 import kpfu.itis.valisheva.android_app.databinding.FragmentCityBinding
 import kpfu.itis.valisheva.android_app.domain.coverters.NavigationConverter
@@ -18,14 +18,14 @@ import kpfu.itis.valisheva.android_app.domain.entities.FullCityWeather
 import kpfu.itis.valisheva.android_app.domain.helpers.UnitHelper
 import kpfu.itis.valisheva.android_app.presentation.services.TemperatureService
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.CityModelView
-import kpfu.itis.valisheva.android_app.utils.AppViewModelFactory
-import javax.inject.Inject
 
 
 private const val KEY_CITY_ID = "CITY ID"
 private const val IMG_START_URL = "https://openweathermap.org/img/wn/"
 private const val IMG_END_URL = "@2x.png"
 
+
+@AndroidEntryPoint
 class CityFragment : Fragment(R.layout.fragment_city){
 
 
@@ -34,15 +34,11 @@ class CityFragment : Fragment(R.layout.fragment_city){
     private lateinit var navigationConverter: NavigationConverter
     private lateinit var unitHelper: UnitHelper
 
-    @Inject
-    lateinit var factory: AppViewModelFactory
 
-    private val viewModel: CityModelView by viewModels {
-        factory
-    }
+    private val viewModel: CityModelView by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (activity?.application as App).appComponent.inject(this)
+//        (activity?.application as App).appComponent.inject(this)
         super.onCreate(savedInstanceState)
     }
 

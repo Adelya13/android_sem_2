@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kpfu.itis.valisheva.android_app.domain.entities.City
 import kpfu.itis.valisheva.android_app.domain.entities.Coordinates
@@ -15,6 +16,7 @@ import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetNearCitiesWeat
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherUseCase
 import javax.inject.Inject
 
+@HiltViewModel
 class FirstModelView @Inject constructor(
     private val getLocationUseCase: GetLocationUseCase,
     private val getDefaultLocationUseCase: GetDefaultLocationUseCase,

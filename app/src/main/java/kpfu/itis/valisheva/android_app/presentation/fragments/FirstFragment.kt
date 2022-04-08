@@ -2,7 +2,6 @@ package kpfu.itis.valisheva.android_app.presentation.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,37 +14,28 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import kpfu.itis.valisheva.android_app.App
+import dagger.hilt.android.AndroidEntryPoint
 import kpfu.itis.valisheva.android_app.R
-import kpfu.itis.valisheva.android_app.data.repository.LocationRepositoryImpl
 import kpfu.itis.valisheva.android_app.databinding.FragmentFirstBinding
 import kpfu.itis.valisheva.android_app.domain.entities.Coordinates
 import kpfu.itis.valisheva.android_app.presentation.decorators.SpaceItemDecorator
 import kpfu.itis.valisheva.android_app.domain.entities.ShortCityWeather
 import kpfu.itis.valisheva.android_app.presentation.viewmodels.FirstModelView
 import kpfu.itis.valisheva.android_app.presentation.rv.CityAdapter
-import kpfu.itis.valisheva.android_app.utils.AppViewModelFactory
-import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 private const val KEY_CITY_ID = "CITY ID"
 
+@AndroidEntryPoint
 class FirstFragment : Fragment(R.layout.fragment_first) {
 
     private lateinit var coordinates: Coordinates
     private lateinit var binding: FragmentFirstBinding
     private lateinit var cityAdapter: CityAdapter
-
-
-    @Inject
-    lateinit var factory: AppViewModelFactory
-
-    private val viewModel: FirstModelView by viewModels {
-        factory
-    }
+    private val viewModel: FirstModelView by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (activity?.application as App).appComponent.inject(this)
+//        (activity?.application as App).appComponent.inject(this)
         getLocation()
         super.onCreate(savedInstanceState)
     }

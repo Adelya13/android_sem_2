@@ -1,11 +1,15 @@
 package kpfu.itis.valisheva.android_app.presentation.viewmodels
 
 import androidx.lifecycle.*
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kpfu.itis.valisheva.android_app.domain.entities.FullCityWeather
 import kpfu.itis.valisheva.android_app.domain.usecases.weather.GetWeatherByIdUseCase
 import javax.inject.Inject
 
+@HiltViewModel
 class CityModelView @Inject constructor(
     private val getWeatherByIdUseCase: GetWeatherByIdUseCase
 ): ViewModel() {

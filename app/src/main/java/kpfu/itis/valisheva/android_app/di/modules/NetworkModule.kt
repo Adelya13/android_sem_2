@@ -2,8 +2,12 @@ package kpfu.itis.valisheva.android_app.di.modules
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kpfu.itis.valisheva.android_app.BuildConfig
 import kpfu.itis.valisheva.android_app.data.api.Api
+import kpfu.itis.valisheva.android_app.di.qualifiers.ApiKeyInterceptor
+import kpfu.itis.valisheva.android_app.di.qualifiers.LoggingInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,10 +21,11 @@ private const val API_KEY = "56fc6c6cb76c0864b4cd055080568268"
 private const val QUERY_API_KEY = "appid"
 
 @Module
+@InstallIn(SingletonComponent::class)
 class NetworkModule {
 
     @Provides
-    @Named("apiKey")
+    @ApiKeyInterceptor
     fun apiKeyInterceptor(): Interceptor = Interceptor { chain ->
         val original = chain.request()
         val newURL = original.url.newBuilder()
@@ -35,7 +40,7 @@ class NetworkModule {
     }
 
     @Provides
-    @Named("logger")
+    @LoggingInterceptor
     fun provideLoggingInterceptor() : Interceptor{
         return HttpLoggingInterceptor()
             .setLevel(
@@ -45,10 +50,10 @@ class NetworkModule {
 
     @Provides
     fun okhttp(
-        @Named("apiKey") apiKeyInterceptor: Interceptor,
-        @Named("logger") httpLoggingInterceptor: Interceptor,
+        @ApiKeyInterceptor apiKeyInterceptor: Interceptor,
+        @LoggingInterceptor httpLoggingInterceptor: Interceptor,
 
-    ): OkHttpClient =
+        ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)
             .also {

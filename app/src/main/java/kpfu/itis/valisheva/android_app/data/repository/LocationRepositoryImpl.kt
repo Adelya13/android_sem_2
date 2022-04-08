@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.UiContext
 import com.google.android.gms.location.LocationServices
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kpfu.itis.valisheva.android_app.domain.entities.Coordinates
 import kpfu.itis.valisheva.android_app.domain.repositories.LocationRepository
 import javax.inject.Inject
@@ -13,7 +14,7 @@ private const val DEFAULT_LATITUDE = 52.3154
 private const val DEFAULT_LONGITUDE = 54.9044
 
 class LocationRepositoryImpl @Inject constructor(
-    context: Context
+    @ApplicationContext context: Context
 ) : LocationRepository{
 
 
