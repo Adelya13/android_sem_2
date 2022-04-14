@@ -1,4 +1,4 @@
-package kpfu.itis.valisheva.android_app.extentions
+package kpfu.itis.valisheva.android_app.presentation.extentions
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
